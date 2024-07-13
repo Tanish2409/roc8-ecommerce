@@ -52,4 +52,4 @@ docker run -d \
   -e POSTGRES_PASSWORD="$DB_PASSWORD" \
   -e POSTGRES_DB=roc8-ecommerce \
   -p "$DB_PORT":5432 \
-  docker.io/postgres && echo "Database container '$DB_CONTAINER_NAME' was successfully created"
+  postgres:16 && echo "Database container '$DB_CONTAINER_NAME' was successfully created"
