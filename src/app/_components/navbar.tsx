@@ -67,7 +67,7 @@ const Navbar = () => {
       </div>
 
       {/* BOTTOM SECTION */}
-      <div className="flex items-center justify-center gap-6 bg-[#F4F4F4] py-3">
+      <div className="bg-background-light flex items-center justify-center gap-6 py-3">
         <IoIosArrowBack />
         <p className="text-sm font-medium">Get 10% off on business sign up</p>
         <IoIosArrowForward />

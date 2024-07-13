@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /* 
+		* Defining this way helps to use them in tailwind config with opacity modifiers 
+		* ref: https://tailwindcss.com/docs/customizing-colors#using-css-variables
+		*/
+
+    /* #f4f4f4 */
+    --background-light: 244 244 244;
+
+    /* #c1c1c1 */
+    --border-light: 193 193 193;
+
+    /* #848484 */
+    --placeholder: 132 132 132;
+  }
+}
