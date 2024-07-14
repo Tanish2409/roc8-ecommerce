@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
+import { Toaster } from "react-hot-toast";
 
 import { TRPCReactProvider } from "@/trpc/react";
 import Navbar from "@/components/navbar";
@@ -31,6 +32,7 @@ export default function RootLayout({
             </HeadlessMantineProvider>
           </HydrateClient>
         </TRPCReactProvider>
+        <Toaster position="top-right" />
       </body>
     </html>
   );

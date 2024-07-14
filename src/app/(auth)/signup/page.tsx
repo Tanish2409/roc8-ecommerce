@@ -2,36 +2,41 @@
 
 import React from "react";
 import { useForm } from "@mantine/form";
-import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { StyledPasswordInput, StyledTextInput } from "@/components/input";
 import { Divider } from "@mantine/core";
 import Link from "next/link";
 import StyledButton from "@/components/button";
-
-const schema = z.object({
-  name: z.string().min(2, { message: "Name should have at least 2 letters" }),
-  email: z.string().email({ message: "Invalid email" }),
-  password: z
-    .string()
-    .min(6, { message: "Password must be atleast 6 characters." }),
-});
+import { signupSchema, type SignupSchema } from "@/types/auth";
+import { api } from "@/trpc/react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const Signup = () => {
-  const form = useForm<z.infer<typeof schema>>({
+  const form = useForm<SignupSchema>({
     mode: "uncontrolled",
     initialValues: {
       email: "",
       password: "",
       name: "",
     },
-    validate: zodResolver(schema),
+    validate: zodResolver(signupSchema),
   });
 
-  type FormValues = typeof form.values;
+  const router = useRouter();
 
-  const handleSubmit = (values: FormValues) => {
-    console.log(values);
+  const signup = api.auth.signup.useMutation({
+    onSuccess: async (data) => {
+      router.replace(`/verify-otp?email=${data.email}`);
+      form.reset();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleSubmit = (values: SignupSchema) => {
+    signup.mutate(values);
   };
 
   return (
