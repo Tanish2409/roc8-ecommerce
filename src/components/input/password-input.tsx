@@ -13,10 +13,10 @@ const StyledPasswordInput: React.FC<Props> = ({ error, ...rest }) => {
         root: "w-full relative",
         label: "text-base mb-2",
         wrapper: cn(
-          "flex w-full border rounded-md pr-[14px]",
+          "flex w-full border rounded-md pr-[14px] overflow-hidden",
           error ? "border-red-500" : "border-border-light",
         ),
-        input: "grow",
+        input: "grow rounded-md",
         innerInput: cn("placeholder:text-placeholder outline-none p-4 w-full"),
         error: "text-red-500 h-full",
         section: "flex items-center justify-centerß underline text-base",
