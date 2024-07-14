@@ -4,9 +4,9 @@ import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 
 import { TRPCReactProvider } from "@/trpc/react";
-import Navbar from "@/app/_components/navbar";
+import Navbar from "@/components/navbar";
 import { HydrateClient } from "@/trpc/server";
-import BoxContainer from "@/app/_components/box-container";
+import BoxContainer from "@/components/box-container";
 import { HeadlessMantineProvider } from "@mantine/core";
 
 export const metadata: Metadata = {
