@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { signupSchema } from "@/types/auth";
+import { signupSchema, verifyOtpSchema } from "@/types/auth";
 import { TRPCError } from "@trpc/server";
 import { sendVerifyEmail } from "@/server/email";
 import { generateOtp } from "@/utils/generate-otp";
@@ -86,6 +86,66 @@ export const authRouter = createTRPCRouter({
           return {
             email: input.email,
           };
+        });
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw new TRPCError({
+            code: error.code,
+            message: error.message,
+          });
+        }
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong. Please try again later",
+        });
+      }
+    }),
+
+  verifyOtp: publicProcedure
+    .input(verifyOtpSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        return await ctx.db.$transaction(async (tx) => {
+          const userTable = tx.user;
+          const otpTable = tx.otp;
+
+          const savedOtp = await otpTable.findUnique({
+            where: {
+              email: input.email,
+            },
+          });
+
+          if (!savedOtp) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "OTP does not exists. Please signup again.",
+            });
+          }
+
+          const isOtpMatch = savedOtp.otp === input.otp;
+
+          if (!isOtpMatch) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Invalid OTP. Please signup again.",
+            });
+          }
+
+          await userTable.update({
+            where: {
+              email: savedOtp.email,
+            },
+            data: {
+              isVerified: true,
+            },
+          });
+
+          await otpTable.delete({
+            where: {
+              id: savedOtp.id,
+            },
+          });
         });
       } catch (error) {
         if (error instanceof TRPCError) {

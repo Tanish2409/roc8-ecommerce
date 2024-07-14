@@ -1,33 +1,24 @@
-"use client";
+import { redirect } from "next/navigation";
+import InputOtpForm from "./_components/input-otp-form";
 
-import StyledButton from "@/components/button";
-import { StyledOTPInput } from "@/components/input";
-import { maskEmail } from "@/utils/mask-email";
-import { useState } from "react";
+type Props = {
+  searchParams: Record<string, string | string[] | undefined>;
+};
 
-const VerifyOTP = () => {
-  const [otp, setOtp] = useState("");
+const VerifyOTP: React.FC<Props> = ({ searchParams }) => {
+  const { email } = searchParams;
 
-  const handleSubmit = () => {
-    console.log(otp);
-  };
+  if (!email) {
+    redirect("/signup");
+  }
 
   return (
     <>
       <h2 className="mb-8 text-center text-3xl font-semibold">
         Verify your email
       </h2>
-      <p className="mb-11 text-center text-base">
-        Enter the 8 digit code you have received on
-        <br />
-        <span className="font-medium">{maskEmail("tanish2409@gmail.com")}</span>
-      </p>
 
-      <StyledOTPInput value={otp} onChange={setOtp} />
-
-      <StyledButton className="mt-16" onClick={handleSubmit}>
-        Verify
-      </StyledButton>
+      <InputOtpForm email={email as string} />
     </>
   );
 };

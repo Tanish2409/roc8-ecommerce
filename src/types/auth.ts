@@ -9,3 +9,10 @@ export const signupSchema = z.object({
 });
 
 export type SignupSchema = z.infer<typeof signupSchema>;
+
+export const verifyOtpSchema = z.object({
+  email: z.string().email(),
+  otp: z.string().min(8),
+});
+
+export type VerifyOtpSchema = z.infer<typeof verifyOtpSchema>;
