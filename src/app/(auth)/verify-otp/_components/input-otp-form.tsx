@@ -25,7 +25,7 @@ const InputOtpForm: React.FC<Props> = ({ email }) => {
     },
     onError: (error) => {
       toast.error(error.message);
-      router.replace("/signup");
+      setOtp("");
     },
   });
 

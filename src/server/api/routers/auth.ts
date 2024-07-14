@@ -119,7 +119,7 @@ export const authRouter = createTRPCRouter({
           if (!savedOtp) {
             throw new TRPCError({
               code: "BAD_REQUEST",
-              message: "OTP does not exists. Please signup again.",
+              message: "OTP does not exists. Try to login or signup again.",
             });
           }
 
@@ -128,7 +128,7 @@ export const authRouter = createTRPCRouter({
           if (!isOtpMatch) {
             throw new TRPCError({
               code: "BAD_REQUEST",
-              message: "Invalid OTP. Please signup again.",
+              message: "Invalid OTP. Please try again.",
             });
           }
 
