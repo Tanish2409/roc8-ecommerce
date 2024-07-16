@@ -1,3 +1,4 @@
+import { publicRoutes } from "@/config/routes";
 import Link from "next/link";
 import React from "react";
 
@@ -53,7 +54,7 @@ const Navbar = () => {
       <div className="flex items-center justify-between px-10 py-4">
         {/* Title */}
         <h1 className="text-3xl font-bold">
-          <Link href="/">ECOMMERCE</Link>
+          <Link href={publicRoutes.homepage.link}>ECOMMERCE</Link>
         </h1>
 
         {/* Links */}
@@ -67,7 +68,7 @@ const Navbar = () => {
       </div>
 
       {/* BOTTOM SECTION */}
-      <div className="bg-background-light flex items-center justify-center gap-6 py-3">
+      <div className="flex items-center justify-center gap-6 bg-background-light py-3">
         <IoIosArrowBack />
         <p className="text-sm font-medium">Get 10% off on business sign up</p>
         <IoIosArrowForward />

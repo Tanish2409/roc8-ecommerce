@@ -11,6 +11,7 @@ import { signupSchema, type SignupSchema } from "@/types/auth";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { publicRoutes } from "@/config/routes";
 
 const Signup = () => {
   const form = useForm<SignupSchema>({
@@ -27,7 +28,7 @@ const Signup = () => {
 
   const signupMutation = api.auth.signup.useMutation({
     onSuccess: async (data) => {
-      router.replace(`/verify-otp?email=${data.email}`);
+      router.replace(`${publicRoutes.verifyOtp.link}?email=${data.email}`);
       form.reset();
     },
     onError: (error) => {
@@ -80,7 +81,7 @@ const Signup = () => {
 
       <p className="mt-8 text-center">
         Have an Account?{" "}
-        <Link href="/login" className="font-medium uppercase">
+        <Link href={publicRoutes.sigup.link} className="font-medium uppercase">
           login
         </Link>
       </p>

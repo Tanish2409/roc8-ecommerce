@@ -2,6 +2,7 @@
 
 // import { LatestPost } from "@/app/_components/post";
 // import { api, HydrateClient } from "@/trpc/server";
+import { publicRoutes } from "@/config/routes";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
@@ -9,7 +10,7 @@ export default async function Home() {
 
   // void api.post.getLatest.prefetch();
 
-  redirect("/signup");
+  redirect(publicRoutes.login.link);
 
   return <></>;
 }

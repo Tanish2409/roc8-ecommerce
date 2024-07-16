@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { api } from "@/trpc/react";
 import toast from "react-hot-toast";
 import { loginSchema, type LoginSchema } from "@/types/auth";
+import { publicRoutes } from "@/config/routes";
 
 const Login = () => {
   const form = useForm<LoginSchema>({
@@ -71,7 +72,7 @@ const Login = () => {
 
       <p className="mt-8 text-center">
         Don&apos;t Have an Account?{" "}
-        <Link href="/signup" className="font-medium uppercase">
+        <Link href={publicRoutes.login.link} className="font-medium uppercase">
           sign up
         </Link>
       </p>
