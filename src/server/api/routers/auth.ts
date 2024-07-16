@@ -6,6 +6,7 @@ import { TRPCError } from "@trpc/server";
 import { sendVerifyEmail } from "@/server/email";
 import { generateOtp } from "@/utils/generate-otp";
 import { generateToken } from "@/server/session-token";
+import { cookies } from "next/headers";
 
 export const authRouter = createTRPCRouter({
   signup: publicProcedure
@@ -206,13 +207,12 @@ export const authRouter = createTRPCRouter({
       email: existingUser.email,
     });
 
-    if (ctx.resHeaders) {
-      console.log("hello");
-      ctx.resHeaders.set(
-        "Set-Cookie",
-        `auth-session=${sessionId}; HttpOnly; Secure; SameSite=Strict; Path=/`,
-      );
-    }
+    cookies().set("auth-session", sessionId, {
+      httpOnly: true,
+      secure: true,
+      path: "/",
+      sameSite: "strict",
+    });
 
     return;
   }),
