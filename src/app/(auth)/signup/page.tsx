@@ -25,7 +25,7 @@ const Signup = () => {
 
   const router = useRouter();
 
-  const signup = api.auth.signup.useMutation({
+  const signupMutation = api.auth.signup.useMutation({
     onSuccess: async (data) => {
       router.replace(`/verify-otp?email=${data.email}`);
       form.reset();
@@ -36,7 +36,7 @@ const Signup = () => {
   });
 
   const handleSubmit = (values: SignupSchema) => {
-    signup.mutate(values);
+    signupMutation.mutate(values);
   };
 
   return (
