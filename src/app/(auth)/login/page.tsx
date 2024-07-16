@@ -2,34 +2,39 @@
 
 import React from "react";
 import { useForm } from "@mantine/form";
-import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { StyledPasswordInput, StyledTextInput } from "@/components/input";
 import { Divider } from "@mantine/core";
 import Link from "next/link";
 import StyledButton from "@/components/button";
+import { useRouter } from "next/navigation";
+import { api } from "@/trpc/react";
+import toast from "react-hot-toast";
+import { loginSchema, type LoginSchema } from "@/types/auth";
 
-const schema = z.object({
-  email: z.string().email({ message: "Invalid email" }),
-  password: z
-    .string()
-    .min(6, { message: "Password must be atleast 6 characters." }),
-});
-
-const Signup = () => {
-  const form = useForm<z.infer<typeof schema>>({
+const Login = () => {
+  const form = useForm<LoginSchema>({
     mode: "uncontrolled",
     initialValues: {
       email: "",
       password: "",
     },
-    validate: zodResolver(schema),
+    validate: zodResolver(loginSchema),
   });
 
-  type FormValues = typeof form.values;
+  const router = useRouter();
 
-  const handleSubmit = (values: FormValues) => {
-    console.log(values);
+  const loginMutation = api.auth.login.useMutation({
+    onSuccess: async () => {
+      router.refresh();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleSubmit = (values: LoginSchema) => {
+    loginMutation.mutate(values);
   };
 
   return (
@@ -74,4 +79,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;

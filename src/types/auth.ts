@@ -16,3 +16,12 @@ export const verifyOtpSchema = z.object({
 });
 
 export type VerifyOtpSchema = z.infer<typeof verifyOtpSchema>;
+
+export const loginSchema = z.object({
+  email: z.string().email({ message: "Invalid email" }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be atleast 6 characters." }),
+});
+
+export type LoginSchema = z.infer<typeof loginSchema>;

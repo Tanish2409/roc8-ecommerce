@@ -1,10 +1,11 @@
 import bcrypt from "bcrypt";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { signupSchema, verifyOtpSchema } from "@/types/auth";
+import { loginSchema, signupSchema, verifyOtpSchema } from "@/types/auth";
 import { TRPCError } from "@trpc/server";
 import { sendVerifyEmail } from "@/server/email";
 import { generateOtp } from "@/utils/generate-otp";
+import { generateToken } from "@/server/session-token";
 
 export const authRouter = createTRPCRouter({
   signup: publicProcedure
@@ -161,6 +162,60 @@ export const authRouter = createTRPCRouter({
         });
       }
     }),
+
+  login: publicProcedure.input(loginSchema).mutation(async ({ ctx, input }) => {
+    // try {
+    const userTable = ctx.db.user;
+
+    const existingUser = await userTable.findUnique({
+      where: {
+        email: input.email,
+      },
+    });
+
+    if (!existingUser) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "User does not exists",
+      });
+    }
+
+    /**
+     * TODO: send a new otp & redirect to verify page instead of throwing error
+     */
+    if (!existingUser.isVerified) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Email not verified. Signup again to get a verification code.",
+      });
+    }
+
+    const isPasswordMatch = await bcrypt.compare(
+      input.password,
+      existingUser.password,
+    );
+
+    if (!isPasswordMatch) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Incorrect password.",
+      });
+    }
+
+    const sessionId = await generateToken({
+      email: existingUser.email,
+    });
+
+    if (ctx.resHeaders) {
+      console.log("hello");
+      ctx.resHeaders.set(
+        "Set-Cookie",
+        `auth-session=${sessionId}; HttpOnly; Secure; SameSite=Strict; Path=/`,
+      );
+    }
+
+    return;
+  }),
 
   // hello: publicProcedure
   //   .input(z.object({ text: z.string() }))
