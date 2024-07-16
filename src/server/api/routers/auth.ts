@@ -5,7 +5,7 @@ import { loginSchema, signupSchema, verifyOtpSchema } from "@/types/auth";
 import { TRPCError } from "@trpc/server";
 import { sendVerifyEmail } from "@/server/email";
 import { generateOtp } from "@/utils/generate-otp";
-import { generateToken } from "@/server/session-token";
+import { redisSessions } from "@/server/redis-session";
 import { cookies } from "next/headers";
 
 export const authRouter = createTRPCRouter({
@@ -203,11 +203,17 @@ export const authRouter = createTRPCRouter({
       });
     }
 
-    const sessionId = await generateToken({
-      email: existingUser.email,
+    const sessionToken = await redisSessions.create({
+      app: "web",
+      id: existingUser.id,
+      d: {
+        email: existingUser.email,
+        name: existingUser.name,
+      },
+      ip: "0.0.0.0",
     });
 
-    cookies().set("auth-session", sessionId, {
+    cookies().set("auth-session", sessionToken.token, {
       httpOnly: true,
       secure: true,
       path: "/",
