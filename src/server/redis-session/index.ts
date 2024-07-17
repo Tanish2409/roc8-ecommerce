@@ -4,10 +4,10 @@
 
 import RedisSessions from "redis-sessions";
 import { env } from "@/env";
-import type { User } from "@prisma/client";
+import { type RedisSessionData } from "@/types/auth";
 
 const createRedisSessions = () =>
-  new RedisSessions<Pick<User, "email" | "name">>({
+  new RedisSessions<RedisSessionData>({
     options: {
       url: env.REDIS_URL,
     },

@@ -1,3 +1,4 @@
+import { type User } from "@prisma/client";
 import { z } from "zod";
 
 export const signupSchema = z.object({
@@ -25,3 +26,24 @@ export const loginSchema = z.object({
 });
 
 export type LoginSchema = z.infer<typeof loginSchema>;
+
+export type RedisSessionData = Pick<User, "email" | "name">;
+
+export type SessionUser = {
+  isAuthenticated: boolean;
+  user: RedisSessionData & { id: string };
+};
+
+type AuthenticatedSessionUserRes = {
+  isAuthenticated: true;
+  user: SessionUser["user"];
+};
+
+type UnauthenticatedSessionUserRes = {
+  isAuthenticated: false;
+  user: null;
+};
+
+export type GetSessionUserRes =
+  | AuthenticatedSessionUserRes
+  | UnauthenticatedSessionUserRes;

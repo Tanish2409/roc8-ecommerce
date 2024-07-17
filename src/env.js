@@ -11,6 +11,8 @@ export const env = createEnv({
     RESEND_API_KEY: z.string().min(1),
     SENDER_EMAIL: z.string().email(),
     REDIS_URL: z.string().url(),
+    PLATFORM_API_KEY: z.string().min(1),
+    SESSION_EXPIRY_TIME: z.string().min(1),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -31,6 +33,8 @@ export const env = createEnv({
    */
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
+    PLATFORM_API_KEY: process.env.PLATFORM_API_KEY,
+    SESSION_EXPIRY_TIME: process.env.SESSION_EXPIRY_TIME,
     REDIS_URL: process.env.REDIS_URL,
     NODE_ENV: process.env.NODE_ENV,
     RESEND_API_KEY: process.env.RESEND_API_KEY,

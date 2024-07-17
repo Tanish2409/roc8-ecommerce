@@ -7,6 +7,7 @@ import { sendVerifyEmail } from "@/server/email";
 import { generateOtp } from "@/utils/generate-otp";
 import { redisSessions } from "@/server/redis-session";
 import { cookies } from "next/headers";
+import { env } from "@/env";
 
 export const authRouter = createTRPCRouter({
   signup: publicProcedure
@@ -165,7 +166,6 @@ export const authRouter = createTRPCRouter({
     }),
 
   login: publicProcedure.input(loginSchema).mutation(async ({ ctx, input }) => {
-    // try {
     const userTable = ctx.db.user;
 
     const existingUser = await userTable.findUnique({
@@ -211,6 +211,8 @@ export const authRouter = createTRPCRouter({
         name: existingUser.name,
       },
       ip: "0.0.0.0",
+      ttl: parseInt(env.SESSION_EXPIRY_TIME),
+      no_resave: true,
     });
 
     cookies().set("auth-session", sessionToken.token, {
@@ -218,35 +220,9 @@ export const authRouter = createTRPCRouter({
       secure: true,
       path: "/",
       sameSite: "strict",
+      maxAge: parseInt(env.SESSION_EXPIRY_TIME),
     });
 
     return;
   }),
-
-  // hello: publicProcedure
-  //   .input(z.object({ text: z.string() }))
-  //   .query(({ input }) => {
-  //     return {
-  //       greeting: `Hello ${input.text}`,
-  //     };
-  //   }),
-
-  // create: publicProcedure
-  //   .input(z.object({ name: z.string().min(1) }))
-  //   .mutation(async ({ ctx, input }) => {
-  //     // simulate a slow db call
-  //     await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  //     return ctx.db.post.create({
-  //       data: {
-  //         name: input.name,
-  //       },
-  //     });
-  //   }),
-
-  // getLatest: publicProcedure.query(({ ctx }) => {
-  //   return ctx.db.post.findFirst({
-  //     orderBy: { createdAt: "desc" },
-  //   });
-  // }),
 });
