@@ -1,7 +1,7 @@
 import { env } from "@/env";
 import { type GetSessionUserRes } from "@/types/auth";
+import { getBaseUrl } from "@/utils/get-base-url";
 import { type NextResponse } from "next/server";
-import { getBaseUrl } from "@/trpc/react";
 
 /**
  * @description: to be only called in the server context. (middleware, rsc, actions)
