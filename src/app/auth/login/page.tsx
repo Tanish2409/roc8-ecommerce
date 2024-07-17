@@ -72,7 +72,7 @@ const Login = () => {
 
       <p className="mt-8 text-center">
         Don&apos;t Have an Account?{" "}
-        <Link href={publicRoutes.login.link} className="font-medium uppercase">
+        <Link href={publicRoutes.sigup.link} className="font-medium uppercase">
           sign up
         </Link>
       </p>

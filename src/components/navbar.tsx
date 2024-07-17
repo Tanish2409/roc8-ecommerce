@@ -1,4 +1,4 @@
-import { publicRoutes } from "@/config/routes";
+import { authenticatedRoutes, publicRoutes } from "@/config/routes";
 import Link from "next/link";
 import React from "react";
 
@@ -8,7 +8,7 @@ import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 const navLinks = [
   {
     label: "Categories",
-    href: "#",
+    href: authenticatedRoutes.categories.link,
   },
   {
     label: "Sales",
