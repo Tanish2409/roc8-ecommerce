@@ -18,6 +18,9 @@ model User {
     isVerified  Boolean     @default(false)
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
+
+
+    interestedCategories UserInterestedCategory[]
 }
 
 model Category {
@@ -25,6 +28,23 @@ model Category {
     name      String        @unique
     createdAt DateTime      @default(now())
     updatedAt DateTime      @updatedAt
+
+    
+    interestedUser UserInterestedCategory[]
+}
+
+model UserInterestedCategory {
+    id          String      @id @default(cuid())
+    userId      String
+    categoryId  String
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @updatedAt
+
+    user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+    category    Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+
+    @@unique([userId, categoryId])
 }
 
 

@@ -4,6 +4,12 @@ import { type GetSessionUserRes } from "@/types/auth";
 import cookie from "cookie";
 import { NextResponse, type NextRequest } from "next/server";
 
+/**
+ * Defining this route handler seperately because to verify the session token in middleware function
+ * I need to connect to redis, which the middleware fn is unable to do so because it's not executed
+ * in the node runtime and the trpc procedure was failing as well, thus giving errors hence switched to
+ * route handler.
+ */
 export async function GET(
   req: NextRequest,
 ): Promise<NextResponse<GetSessionUserRes>> {

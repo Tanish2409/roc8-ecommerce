@@ -2,14 +2,16 @@
 
 import { api } from "@/trpc/react";
 import cn from "@/utils/class-names";
-import { Checkbox, Pagination, type PaginationProps } from "@mantine/core";
+import { Checkbox } from "@mantine/core";
 import React, { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { publicRoutes } from "@/config/routes";
 import toast from "react-hot-toast";
 import BounceLoader from "react-spinners/MoonLoader";
+import StyledPagination from "@/components/StyledPagination";
 
 const Categories = () => {
+  // for pagination
   const [page, setPage] = useState(1);
 
   const router = useRouter();
@@ -23,6 +25,18 @@ const Categories = () => {
         enabled: true,
       },
     );
+
+  const apiUtils = api.useUtils();
+
+  const updateInterestedCategoryMutation =
+    api.category.updateInterested.useMutation({
+      onSuccess: async () => {
+        await apiUtils.category.invalidate();
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
 
   if (getAllCategoriesQuery.isError) {
     if (getAllCategoriesQuery.error?.data?.code === "UNAUTHORIZED") {
@@ -40,6 +54,16 @@ const Categories = () => {
         : 0,
     [getAllCategoriesData?.count, getAllCategoriesData?.limit],
   );
+
+  const handleUpdateInterestedCategory = async ({
+    categoryId,
+  }: {
+    categoryId: string;
+  }) => {
+    updateInterestedCategoryMutation.mutate({
+      categoryId,
+    });
+  };
 
   return (
     <>
@@ -59,19 +83,32 @@ const Categories = () => {
           categories.map((category) => {
             return (
               <Checkbox
-                checked={false}
                 label={category.name}
                 key={category.id}
                 onChange={() => {
-                  {
-                  }
+                  void handleUpdateInterestedCategory({
+                    categoryId: category.id,
+                  });
                 }}
                 classNames={{
                   body: "flex",
-                  input: "hidden",
-                  inner:
-                    "w-6 h-6 flex items-center justify-center bg-black rounded mr-3 cursor-pointer",
-                  icon: cn("w-[14px] text-white"),
+                  inner: cn(
+                    "w-6 h-6 flex items-center justify-center bg-checkbox-bg rounded mr-3 cursor-pointer relative",
+                    category.isUserInterested && "bg-black",
+                    updateInterestedCategoryMutation.isPending &&
+                      "opacity-50 cursor-not-allowed",
+                  ),
+                  input: cn(
+                    "block absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer",
+                    updateInterestedCategoryMutation.isPending &&
+                      "cursor-not-allowed pointer-events-none",
+                  ),
+                  icon: cn(
+                    "w-[14px] text-white hidden",
+                    category.isUserInterested && "block",
+                    updateInterestedCategoryMutation.isPending &&
+                      "cursor-not-allowed",
+                  ),
                 }}
               />
             );
@@ -81,24 +118,6 @@ const Categories = () => {
 
       <StyledPagination total={totalPages} value={page} onChange={setPage} />
     </>
-  );
-};
-
-const StyledPagination = (props: PaginationProps) => {
-  return (
-    <Pagination
-      total={props.total}
-      value={props.value}
-      onChange={props.onChange}
-      withEdges
-      siblings={2}
-      classNames={{
-        root: "mt-12 flex [&>div]:flex [&>div]:justify-between [&>div]:w-full",
-        control:
-          "w-6 text-text-light data-[active=true]:text-black font-medium text-xl",
-        dots: "w-[30px] text-text-light",
-      }}
-    />
   );
 };
 
