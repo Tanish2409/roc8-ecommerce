@@ -54,6 +54,7 @@ const Login = () => {
             error={form.errors?.email}
             key={form.key("email")}
             {...form.getInputProps("email", { type: "input" })}
+            disabled={loginMutation.isPending}
           />
 
           <StyledPasswordInput
@@ -62,10 +63,13 @@ const Login = () => {
             error={form.errors?.password}
             key={form.key("password")}
             {...form.getInputProps("password", { type: "input" })}
+            disabled={loginMutation.isPending}
           />
         </div>
 
-        <StyledButton type="submit">login</StyledButton>
+        <StyledButton type="submit" disabled={loginMutation.isPending}>
+          login
+        </StyledButton>
       </form>
 
       <Divider className="h-[1px] w-full bg-border-light" />

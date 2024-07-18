@@ -54,6 +54,7 @@ const Signup = () => {
             error={form.errors?.name}
             key={form.key("name")}
             {...form.getInputProps("name", { type: "input" })}
+            disabled={signupMutation.isPending}
           />
 
           <StyledTextInput
@@ -63,6 +64,7 @@ const Signup = () => {
             error={form.errors?.email}
             key={form.key("email")}
             {...form.getInputProps("email", { type: "input" })}
+            disabled={signupMutation.isPending}
           />
 
           <StyledPasswordInput
@@ -71,10 +73,13 @@ const Signup = () => {
             error={form.errors?.password}
             key={form.key("password")}
             {...form.getInputProps("password", { type: "input" })}
+            disabled={signupMutation.isPending}
           />
         </div>
 
-        <StyledButton type="submit">create account</StyledButton>
+        <StyledButton type="submit" disabled={signupMutation.isPending}>
+          {signupMutation.isPending ? "Submitting..." : "Create Account"}
+        </StyledButton>
       </form>
 
       <Divider className="h-[1px] w-full bg-border-light" />

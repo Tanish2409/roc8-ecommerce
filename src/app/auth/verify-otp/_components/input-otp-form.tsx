@@ -8,7 +8,7 @@ import { api } from "@/trpc/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { publicRoutes } from "@/config/routes";
+import { authenticatedRoutes } from "@/config/routes";
 
 type Props = {
   email: string;
@@ -21,8 +21,7 @@ const InputOtpForm: React.FC<Props> = ({ email }) => {
 
   const verifyOtp = api.auth.verifyOtp.useMutation({
     onSuccess: async () => {
-      console.log("user verified");
-      router.replace(publicRoutes.login.link);
+      router.push(authenticatedRoutes.categories.link);
     },
     onError: (error) => {
       toast.error(error.message);
@@ -43,8 +42,12 @@ const InputOtpForm: React.FC<Props> = ({ email }) => {
 
       <StyledOTPInput value={otp} onChange={setOtp} />
 
-      <StyledButton className="mt-16" onClick={handleSubmit}>
-        Verify
+      <StyledButton
+        className="mt-16"
+        onClick={handleSubmit}
+        disabled={verifyOtp.isPending || otp.length < 8}
+      >
+        {verifyOtp.isPending ? "Verifying..." : "Verify"}
       </StyledButton>
     </>
   );

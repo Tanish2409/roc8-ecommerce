@@ -8,6 +8,29 @@ import { generateOtp } from "@/utils/generate-otp";
 import { redisSessions } from "@/server/redis-session";
 import { cookies } from "next/headers";
 import { env } from "@/env";
+import { type User } from "@prisma/client";
+
+const setSessionToken = async ({ user }: { user: User }) => {
+  const sessionToken = await redisSessions.create({
+    app: "web",
+    id: user.id,
+    d: {
+      email: user.email,
+      name: user.name,
+    },
+    ip: "0.0.0.0",
+    ttl: parseInt(env.SESSION_EXPIRY_TIME),
+    no_resave: true,
+  });
+
+  cookies().set("auth-session", sessionToken.token, {
+    httpOnly: true,
+    secure: true,
+    path: "/",
+    sameSite: "strict",
+    maxAge: parseInt(env.SESSION_EXPIRY_TIME),
+  });
+};
 
 export const authRouter = createTRPCRouter({
   signup: publicProcedure
@@ -135,7 +158,7 @@ export const authRouter = createTRPCRouter({
             });
           }
 
-          await userTable.update({
+          const user = await userTable.update({
             where: {
               email: savedOtp.email,
             },
@@ -149,6 +172,8 @@ export const authRouter = createTRPCRouter({
               id: savedOtp.id,
             },
           });
+
+          await setSessionToken({ user });
         });
       } catch (error) {
         if (error instanceof TRPCError) {
@@ -203,24 +228,8 @@ export const authRouter = createTRPCRouter({
       });
     }
 
-    const sessionToken = await redisSessions.create({
-      app: "web",
-      id: existingUser.id,
-      d: {
-        email: existingUser.email,
-        name: existingUser.name,
-      },
-      ip: "0.0.0.0",
-      ttl: parseInt(env.SESSION_EXPIRY_TIME),
-      no_resave: true,
-    });
-
-    cookies().set("auth-session", sessionToken.token, {
-      httpOnly: true,
-      secure: true,
-      path: "/",
-      sameSite: "strict",
-      maxAge: parseInt(env.SESSION_EXPIRY_TIME),
+    await setSessionToken({
+      user: existingUser,
     });
 
     return;

@@ -1,6 +1,8 @@
 import { type User } from "@prisma/client";
 import { z } from "zod";
 
+export const emailSchema = z.string().email();
+
 export const signupSchema = z.object({
   name: z.string().min(2, { message: "Name should have at least 2 letters" }),
   email: z.string().email({ message: "Invalid email" }),

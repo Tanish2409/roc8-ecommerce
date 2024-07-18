@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import InputOtpForm from "./_components/input-otp-form";
 import { publicRoutes } from "@/config/routes";
+import { emailSchema } from "@/types/auth";
 
 type Props = {
   searchParams: Record<string, string | string[] | undefined>;
@@ -9,7 +10,9 @@ type Props = {
 const VerifyOTP: React.FC<Props> = ({ searchParams }) => {
   const { email } = searchParams;
 
-  if (!email) {
+  const isEmailValid = emailSchema.safeParse(email);
+
+  if (!isEmailValid.success) {
     redirect(publicRoutes.sigup.link);
   }
 
