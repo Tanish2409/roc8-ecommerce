@@ -8,6 +8,7 @@ import { api } from "@/trpc/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { publicRoutes } from "@/config/routes";
 
 type Props = {
   email: string;
@@ -21,7 +22,7 @@ const InputOtpForm: React.FC<Props> = ({ email }) => {
   const verifyOtp = api.auth.verifyOtp.useMutation({
     onSuccess: async () => {
       console.log("user verified");
-      router.replace("/login");
+      router.replace(publicRoutes.login.link);
     },
     onError: (error) => {
       toast.error(error.message);

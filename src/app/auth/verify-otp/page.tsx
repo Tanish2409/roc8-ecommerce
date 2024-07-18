@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import InputOtpForm from "./_components/input-otp-form";
+import { publicRoutes } from "@/config/routes";
 
 type Props = {
   searchParams: Record<string, string | string[] | undefined>;
@@ -9,7 +10,7 @@ const VerifyOTP: React.FC<Props> = ({ searchParams }) => {
   const { email } = searchParams;
 
   if (!email) {
-    redirect("/signup");
+    redirect(publicRoutes.sigup.link);
   }
 
   return (
