@@ -17,5 +17,11 @@
 
     /* #848484 */
     --placeholder: 132 132 132;
+
+    /* #cccccc */
+    --checkbox-bg: 204 204 204;
+
+    /* #acacac */
+    --text-light: 172 172 172;
   }
 }

@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import { api } from "@/trpc/react";
 import toast from "react-hot-toast";
 import { loginSchema, type LoginSchema } from "@/types/auth";
-import { publicRoutes } from "@/config/routes";
+import { authenticatedRoutes, publicRoutes } from "@/config/routes";
 
 const Login = () => {
   const form = useForm<LoginSchema>({
@@ -26,8 +26,8 @@ const Login = () => {
   const router = useRouter();
 
   const loginMutation = api.auth.login.useMutation({
-    onSuccess: async () => {
-      router.refresh();
+    onSuccess: () => {
+      router.push(authenticatedRoutes.categories.link);
     },
     onError: (error) => {
       toast.error(error.message);

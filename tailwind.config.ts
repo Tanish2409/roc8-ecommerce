@@ -11,6 +11,8 @@ export default {
       colors: {
         "background-light": "rgb(var(--background-light) / <alpha-value>)",
         "border-light": "rgb(var(--border-light) / <alpha-value>)",
+        "checkbox-bg": "rgb(var(--checkbox-bg) / <alpha-value>)",
+        "text-light": "rgb(var(--text-light) / <alpha-value>)",
         placeholder: "rgb(var(--placeholder) / <alpha-value>)",
       },
     },
