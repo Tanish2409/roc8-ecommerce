@@ -11,7 +11,7 @@ import { getSessionUser } from "@/server/api/routeHandler/auth";
 export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  const sessionToken = cookies().get("auth-session");
+  const sessionToken = cookies().get("auth-session")?.value;
 
   if (authenticatedRouteLinks.includes(pathname) && !sessionToken) {
     return NextResponse.redirect(new URL(publicRoutes.login.link, req.url));
@@ -24,7 +24,7 @@ export default async function middleware(req: NextRequest) {
   // At this point we are sure that the session token exists
   // Now we will check wether the session token is valid or not
 
-  const { data: sessionUser } = await getSessionUser(sessionToken!.value);
+  const { data: sessionUser } = await getSessionUser();
 
   if (sessionUser.isAuthenticated) {
     if (publicRouteLinks.includes(pathname)) {
