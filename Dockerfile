@@ -17,6 +17,7 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json ./
+COPY ./prisma ./
 RUN npm install
 
 
