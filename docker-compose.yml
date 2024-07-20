@@ -1,0 +1,55 @@
+version: "3"
+
+services:
+  frontend:
+    depends_on:
+      - webserver
+    image: tanish2409/roc8-ecommerce
+    container_name: roc8-ecommerce
+    ports:
+      - "3000:3000"
+    restart: always
+    environment:
+      - INFISICAL_CLIENT_ID=$INFISICAL_CLIENT_ID
+      - INFISICAL_CLIENT_SECRET=$INFISICAL_CLIENT_SECRET
+    entrypoint:
+      [
+        "/bin/bash",
+        "-c",
+        "infisical run --token=$(infisical login --method=universal-auth --client-id=$INFISICAL_CLIENT_ID --client-secret=$INFISICAL_CLIENT_SECRET --silent --plain) --env=prod --projectId=_INFISICAL_PROJECT_ID_ --path=/roc8-ecommerce -- node server.js",
+      ]
+    networks:
+      - app-network
+
+  webserver:
+    image: caddy
+    container_name: webserver
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/data/:/data/
+      - ./caddy/config/:/config/
+      - ./caddy/Caddyfile/:/etc/caddy/Caddyfile
+    networks:
+      - app-network
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/ubuntu/.docker/config.json:/config.json
+    environment:
+      - HOME=/
+    command: --cleanup --interval 30 roc8-ecommerce
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  helper:
+    external: true
+  portainer_data:
+    external: true

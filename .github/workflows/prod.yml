@@ -27,4 +27,4 @@ jobs:
         uses: crazy-max/ghaction-github-runtime@v3
 
       - name: Build & Push
-        run: INFISICAL_TOKEN=$(infisical login --method=universal-auth --client-id=${{secrets.INFISICAL_CLIENT_ID}} --client-secret=${{secrets.INFISICAL_CLIENT_SECRET}} --silent --plain) docker buildx build --platform linux/amd64 --provenance=false --cache-from type=gha --cache-to type=gha,mode=max -f ./Dockerfile --build-arg infisical_env=prod --build-arg infisical_project_id=${{secrets.INFISICAL_PROJECT_ID}} --secret id=infisical_token,env=INFISICAL_TOKEN -t ${{secrets.DOCKERHUB_USERNAME}}/${{secrets.DOCKERHUB_REPO_NAME}}:prod --push .
+        run: INFISICAL_TOKEN=$(infisical login --method=universal-auth --client-id=${{secrets.INFISICAL_CLIENT_ID}} --client-secret=${{secrets.INFISICAL_CLIENT_SECRET}} --silent --plain) docker buildx build --platform linux/arm64/v8 --provenance=false --cache-from type=gha --cache-to type=gha,mode=max -f ./Dockerfile --build-arg infisical_env=prod --build-arg infisical_project_id=${{secrets.INFISICAL_PROJECT_ID}} --secret id=infisical_token,env=INFISICAL_TOKEN -t ${{secrets.DOCKERHUB_USERNAME}}/${{secrets.DOCKERHUB_REPO_NAME}}:prod --push .
