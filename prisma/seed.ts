@@ -2,6 +2,8 @@ import { db } from "../src/server/db";
 import { faker } from "@faker-js/faker";
 
 async function main() {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   await db.$transaction(async (tx) => {
     await tx.category.deleteMany();
 
