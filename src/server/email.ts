@@ -19,7 +19,7 @@ export const sendVerifyEmail = async ({
     const { error } = await resend.emails.send({
       from: env.SENDER_EMAIL,
       to: email,
-      subject: "Verify Email",
+      subject: "Roc8 Ecommerce - Verify your Email",
       react: VerityEmailTemplate({ name, otp }),
     });
 
