@@ -284,13 +284,10 @@ export const authRouter = createTRPCRouter({
       });
     }
 
-    /**
-     * TODO: send a new otp & redirect to verify page instead of throwing error
-     */
     if (!existingUser.isVerified) {
       throw new TRPCError({
         code: "FORBIDDEN",
-        message: "Email not verified. Signup again to get a verification code.",
+        message: "Email not verified. Please verify email to login.",
       });
     }
 

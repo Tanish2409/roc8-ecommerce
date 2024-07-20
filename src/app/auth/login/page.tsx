@@ -31,6 +31,12 @@ const Login = () => {
     },
     onError: (error) => {
       toast.error(error.message);
+
+      if (error.data?.code === "FORBIDDEN") {
+        router.push(
+          `${publicRoutes.verifyOtp.link}?email=${form.getValues().email}`,
+        );
+      }
     },
   });
 

@@ -27,6 +27,10 @@ export const publicRoutes = {
   verifyOtp: {
     link: "/auth/verify-otp",
   },
+
+  notFound: {
+    link: "/_not-found",
+  },
 } satisfies Routes;
 
 const getLinksFromRoutes = (routesObj: Routes): string[] => {

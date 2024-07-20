@@ -21,6 +21,10 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  if (![...publicRouteLinks, ...authenticatedRouteLinks].includes(pathname)) {
+    return NextResponse.redirect(new URL(publicRoutes.notFound.link, req.url));
+  }
+
   // At this point we are sure that the session token exists
   // Now we will check wether the session token is valid or not
 
