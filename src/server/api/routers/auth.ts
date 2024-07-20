@@ -9,6 +9,7 @@ import { redisSessions } from "@/server/redis-session";
 import { cookies } from "next/headers";
 import { env } from "@/env";
 import { type User } from "@prisma/client";
+import { z } from "zod";
 
 const setSessionToken = async ({ user }: { user: User }) => {
   const sessionToken = await redisSessions.create({
@@ -98,6 +99,7 @@ export const authRouter = createTRPCRouter({
               },
               update: {
                 otp,
+                retries: 0,
               },
             });
 
@@ -131,32 +133,56 @@ export const authRouter = createTRPCRouter({
   verifyOtp: publicProcedure
     .input(verifyOtpSchema)
     .mutation(async ({ ctx, input }) => {
+      const MAX_RETRIES = 3;
       try {
+        const savedOtp = await ctx.db.otp.findUnique({
+          where: {
+            email: input.email,
+          },
+        });
+
+        if (!savedOtp) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "OTP does not exists. Request a new OTP.",
+          });
+        }
+
+        const isOtpMatch = savedOtp.otp === input.otp;
+
+        if (!isOtpMatch) {
+          /**
+           * We add a max retries logic so that no one can bruteforce their way in
+           * to our platform since we don't have any expiration time for the otp
+           * and on successful otp verification, user is logged in to the platform.
+           */
+          if (savedOtp.retries >= MAX_RETRIES) {
+            await ctx.db.otp.delete({
+              where: { id: savedOtp.id },
+            });
+
+            throw new TRPCError({
+              code: "TOO_MANY_REQUESTS",
+              message: "Retries limit reached. Please request a new OTP.",
+            });
+          } else {
+            await ctx.db.otp.update({
+              where: { id: savedOtp.id },
+              data: {
+                retries: { increment: 1 },
+              },
+            });
+
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: `Invalid OTP. You have ${MAX_RETRIES - savedOtp.retries} tries left.`,
+            });
+          }
+        }
+
         return await ctx.db.$transaction(async (tx) => {
           const userTable = tx.user;
           const otpTable = tx.otp;
-
-          const savedOtp = await otpTable.findUnique({
-            where: {
-              email: input.email,
-            },
-          });
-
-          if (!savedOtp) {
-            throw new TRPCError({
-              code: "BAD_REQUEST",
-              message: "OTP does not exists. Try to login or signup again.",
-            });
-          }
-
-          const isOtpMatch = savedOtp.otp === input.otp;
-
-          if (!isOtpMatch) {
-            throw new TRPCError({
-              code: "BAD_REQUEST",
-              message: "Invalid OTP. Please try again.",
-            });
-          }
 
           const user = await userTable.update({
             where: {
@@ -188,6 +214,58 @@ export const authRouter = createTRPCRouter({
           message: "Something went wrong. Please try again later",
         });
       }
+    }),
+
+  resendOtp: publicProcedure
+    .input(z.object({ email: z.string().email() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.$transaction(async (tx) => {
+        const userTable = tx.user;
+        const otpTable = tx.otp;
+
+        const user = await userTable.findUnique({
+          where: { email: input.email },
+        });
+
+        if (!user) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "User not found.",
+          });
+        }
+
+        if (!user || user.isVerified) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Already verified. Please login.",
+          });
+        }
+
+        // create otp and save to collection
+        const otp = generateOtp();
+
+        // create new if user does not exists otherwise update the previous record
+        await otpTable.upsert({
+          where: {
+            email: input.email,
+          },
+          create: {
+            email: input.email,
+            otp,
+          },
+          update: {
+            otp,
+            retries: 0,
+          },
+        });
+
+        // send email
+        await sendVerifyEmail({
+          name: user.name,
+          otp,
+          email: input.email,
+        });
+      });
     }),
 
   login: publicProcedure.input(loginSchema).mutation(async ({ ctx, input }) => {

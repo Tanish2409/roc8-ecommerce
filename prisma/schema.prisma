@@ -53,5 +53,6 @@ model Otp {
     id          String      @id @default(cuid())
     email       String      @unique
     otp         String      @unique
+    retries     Int         @default(0)
     createdAt   DateTime    @default(now())
 }
