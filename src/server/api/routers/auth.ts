@@ -1,6 +1,10 @@
 import bcrypt from "bcrypt";
 
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import {
+  authProtectedProcedure,
+  createTRPCRouter,
+  publicProcedure,
+} from "@/server/api/trpc";
 import { loginSchema, signupSchema, verifyOtpSchema } from "@/types/auth";
 import { TRPCError } from "@trpc/server";
 import { sendVerifyEmail } from "@/server/email";
@@ -306,6 +310,29 @@ export const authRouter = createTRPCRouter({
     await setSessionToken({
       user: existingUser,
     });
+
+    return;
+  }),
+
+  getUser: authProtectedProcedure.query(({ ctx }) => {
+    return ctx.sessionUser.user;
+  }),
+
+  logout: authProtectedProcedure.mutation(async () => {
+    const sessionToken = cookies().get("auth-session");
+
+    if (!sessionToken) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+      });
+    }
+
+    await redisSessions.kill({
+      app: "web",
+      token: sessionToken.value,
+    });
+
+    cookies().delete("auth-session");
 
     return;
   }),

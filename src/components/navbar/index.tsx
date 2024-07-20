@@ -4,6 +4,7 @@ import React from "react";
 
 import { FiSearch, FiShoppingCart } from "react-icons/fi";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
+import Username from "./username";
 
 const navLinks = [
   {
@@ -47,7 +48,9 @@ const Navbar = () => {
       <div className="flex items-center justify-end gap-5 px-10 py-3 text-xs">
         <Link href="#">Help</Link>
         <Link href="#">Orders & Returns</Link>
-        <Link href="#">User</Link>
+        <Link href="#">
+          <Username />
+        </Link>
       </div>
 
       {/* MIDDLE SECTION */}
