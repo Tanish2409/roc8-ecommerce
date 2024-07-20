@@ -9,7 +9,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { authenticatedRoutes, publicRoutes } from "@/config/routes";
-import { useTimer } from "@/utils/useTimer";
+import { useTimer } from "@/hooks/useTimer";
 import cn from "@/utils/class-names";
 import Link from "next/link";
 
