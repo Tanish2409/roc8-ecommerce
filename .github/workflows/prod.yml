@@ -1,0 +1,30 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Infisical
+        run: |
+          curl -1sLf "https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh" | sudo -E bash
+          sudo apt-get update && sudo apt-get install -y infisical
+
+      - name: Dockerhub login
+        run: docker login --username ${{secrets.DOCKERHUB_USERNAME}} --password ${{secrets.DOCKERHUB_PASSWORD}}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Expose GitHub Runtime
+        uses: crazy-max/ghaction-github-runtime@v3
+
+      - name: Build & Push
+        run: INFISICAL_TOKEN=$(infisical login --method=universal-auth --client-id=${{secrets.INFISICAL_CLIENT_ID}} --client-secret=${{secrets.INFISICAL_CLIENT_SECRET}} --silent --plain) docker buildx build --platform linux/amd64 --provenance=false --cache-from type=gha --cache-to type=gha,mode=max -f ./Dockerfile --build-arg infisical_env=prod --build-arg infisical_project_id=${{secrets.INFISICAL_PROJECT_ID}} --secret id=infisical_token,env=INFISICAL_TOKEN -t ${{secrets.DOCKERHUB_USERNAME}}/${{secrets.DOCKERHUB_REPO_NAME}}:prod --push .
