@@ -26,8 +26,9 @@ const Login = () => {
   const router = useRouter();
 
   const loginMutation = api.auth.login.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       router.push(authenticatedRoutes.categories.link);
+      window.location.reload();
     },
     onError: (error) => {
       toast.error(error.message);

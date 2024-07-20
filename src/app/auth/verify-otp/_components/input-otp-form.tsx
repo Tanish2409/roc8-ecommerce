@@ -37,6 +37,7 @@ const InputOtpForm: React.FC<Props> = ({ email }) => {
   const verifyOtp = api.auth.verifyOtp.useMutation({
     onSuccess: async () => {
       router.push(authenticatedRoutes.categories.link);
+      window.location.reload();
     },
     onError: (error) => {
       toast.error(error.message);
