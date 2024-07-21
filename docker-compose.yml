@@ -44,12 +44,25 @@ services:
       - HOME=/
     command: --cleanup --interval 30 roc8-ecommerce
 
+  db:
+    image: postgres:16
+    container_name: db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=your_password
+      - POSTGRES_DB=roc8-ecommerce
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
 
 volumes:
-  helper:
-    external: true
-  portainer_data:
+  pgdata:
     external: true
