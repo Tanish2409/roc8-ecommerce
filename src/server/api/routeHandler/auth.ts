@@ -28,7 +28,7 @@ export async function getSessionUser(): Promise<{
   console.log("=======================j", getBaseUrl());
   const res = (await fetch(`${getBaseUrl()}/api/auth/getSessionUser`, {
     method: "GET",
-    credentials: "same-origin",
+    credentials: "include",
     headers: {
       Cookie: `sessionToken=${sessionToken}`,
       "x-api-key": env.PLATFORM_API_KEY,

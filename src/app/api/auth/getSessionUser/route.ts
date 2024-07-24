@@ -30,6 +30,8 @@ export async function GET(
 
     const cookieHeader = req.headers.get("cookie");
 
+    console.log("===============asdfa", cookieHeader);
+
     // reject if no cookie header
     if (!cookieHeader) {
       return NextResponse.json(
